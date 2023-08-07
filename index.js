@@ -9,24 +9,17 @@ const path = require("path")
 const port = process.env.PORT || 8080
 const web = express()
 
-// Functions
-const publicFiles = (file)=>{return path.join(__dirname, `public/${file}`)}
-
 /// Configurations
 // Express
 web.use(compress({ level: 1 }))
 
 // Main
 web.use("", (req, res, next)=>{
-    if(req.path.match(".html")) return res.redirect("/")
+    if(req.path.match(".html")) return res.redirect(req.path.replace(".html", ""))
 
     next()
 })
 
-web.use(express.static(path.join(__dirname, "public")))
-web.get("/join", (req, res)=>res.sendFile(publicFiles("join.html")))
-web.get("/privacy-policy", (req, res)=>res.sendFile(publicFiles("privacy-policy.html")))
+web.use(express.static(path.join(__dirname, "public"), { extensions: ["html"] }))
 web.use("*", (req, res)=>res.redirect("/"))
-web.listen(port, ()=>{
-    console.log(`Server is running. Port: ${port}`)
-})
+web.listen(port, ()=>{console.log(`Server is running. Port: ${port}`)})
